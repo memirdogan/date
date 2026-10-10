@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sana bir davet var 💌</title>
+<meta name="description" content="Aç ve cevap ver">
+<meta name="theme-color" content="#fff3f5">
+
+<!-- Open Graph (WhatsApp önizlemesi için mutlak adres şart; domaini kendine göre değiştir) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sana bir davet var 💌">
+<meta property="og:description" content="Aç ve cevap ver">
+<meta property="og:image" content="https://date.memir.codes/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<button id="sound" class="sound" type="button" aria-label="Sesi aç/kapat">🔊</button>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<main id="app">
+
+  <!-- 0) Oluşturma -->
+  <section class="screen" id="s-create" hidden>
+    <div class="card">
+      <div class="emoji">🎟️</div>
+      <h1>Birine randevu teklif et 💌</h1>
+      <label class="field">Senin adın
+        <input id="in-from" maxlength="30" autocomplete="off" placeholder="Örn. Emir">
+      </label>
+      <label class="field">Onun adı <small>(opsiyonel)</small>
+        <input id="in-to" maxlength="30" autocomplete="off" placeholder="Örn. Ayşe">
+      </label>
+      <button id="btn-make" class="btn primary" type="button">Davet linkini oluştur</button>
+      <div id="made" hidden>
+        <input id="made-link" class="linkbox" readonly aria-label="Davet linki">
+        <div class="row">
+          <button id="btn-share" class="btn primary" type="button">Paylaş 📤</button>
+          <button id="btn-copy" class="btn ghost" type="button">Linki kopyala 📋</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1) Davet -->
+  <section class="screen" id="s-invite" hidden>
+    <div class="card invite-card">
+      <div id="invite-main">
+        <div class="emoji big">💌</div>
+        <h1 id="invite-title"></h1>
+        <p class="question">Benimle çıkar mısın?</p>
+        <div class="actions" id="actions">
+          <button id="btn-yes" class="btn primary yes" type="button">Evet 💖</button>
+          <button id="btn-no" class="btn ghost no" type="button" data-nosound>Hayır</button>
+        </div>
+      </div>
+      <div id="yay" class="yay" hidden>Yaşasın! 🎉</div>
+    </div>
+  </section>
+
+  <!-- 2) Tarih -->
+  <section class="screen" id="s-date" hidden>
+    <div class="card">
+      <div class="emoji">📆</div>
+      <h1>Hangi gün?</h1>
+      <div id="date-grid" class="grid g3"></div>
+    </div>
+  </section>
+
+  <!-- 3) Saat -->
+  <section class="screen" id="s-time" hidden>
+    <div class="card">
+      <div class="emoji">⏰</div>
+      <h1>Saat kaçta?</h1>
+      <div id="time-grid" class="grid g3"></div>
+      <button class="link small-link" type="button" data-back="s-date">← geri dön</button>
+    </div>
+  </section>
+
+  <!-- 4) Mekan -->
+  <section class="screen" id="s-place" hidden>
+    <div class="card">
+      <div class="emoji">🍽️</div>
+      <h1>Ne yapalım?</h1>
+      <div id="place-grid" class="grid g2"></div>
+      <label class="field">
+        <input id="in-note" maxlength="60" autocomplete="off" placeholder="Semt ya da mekan adı (ör. Kadıköy)">
+      </label>
+      <button id="btn-place-next" class="btn primary" type="button" disabled>Devam</button>
+      <button class="link small-link" type="button" data-back="s-time">← geri dön</button>
+    </div>
+  </section>
+
+  <!-- 5) Bilet -->
+  <section class="screen" id="s-ticket" hidden>
+    <h1 class="plain">Randevun hazır 🎟️</h1>
+    <div id="ticket-slot"></div>
+    <div class="card slim">
+      <label class="field" id="name-field" hidden>Adın ne?
+        <input id="in-name" maxlength="30" autocomplete="off" placeholder="Senin adın">
+      </label>
+      <button id="btn-confirm" class="btn primary" type="button">Randevuyu onayla ve gönder 💌</button>
+      <div id="sent" hidden>
+        <div class="row">
+          <a id="btn-wa" class="btn wa" target="_blank" rel="noopener">WhatsApp 💬</a>
+          <button id="btn-copy2" class="btn ghost" type="button">Linki kopyala 📋</button>
+        </div>
+      </div>
+      <button class="link small-link" type="button" data-back="s-place">← geri dön</button>
+    </div>
+  </section>
+
+  <!-- 6) Sonuç -->
+  <section class="screen" id="s-result" hidden>
+    <h1 class="plain" id="result-title"></h1>
+    <div id="result-slot"></div>
+    <div class="card slim">
+      <button id="btn-ics" class="btn primary" type="button">Takvime ekle 📅</button>
+      <a id="btn-map" class="btn ghost" target="_blank" rel="noopener">Haritada aç 📍</a>
+      <button id="btn-new" class="btn ghost" type="button">Sen de birine teklif et 💌</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">memir.codes tarafından kodlandı ✨</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
